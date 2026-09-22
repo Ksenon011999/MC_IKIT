@@ -1,0 +1,155 @@
+# ===== Операционные системы =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ===== Редакторы и IDE =====
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (IntelliJ, PyCharm, WebStorm и т.д.)
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ===== Зависимости =====
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+.gradle/
+build/
+
+# Go
+*.exe
+*.test
+*.out
+vendor/
+
+# Rust
+target/
+Cargo.lock
+
+# PHP
+vendor/
+composer.lock
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+Gemfile.lock
+
+# ===== Переменные окружения и секреты =====
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+secrets.yml
+secrets.json
+
+# ===== Логи =====
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== Сборка и кэш =====
+.cache/
+dist/
+build/
+tmp/
+temp/
+*.tmp
+
+# ===== Docker =====
+# .dockerignore используется отдельно
+
+# ===== Прочее =====
+*.bak
+*.backup
+*.orig
+*.pid
+*.seed
+*.tgz
+*.zip
+*.tar.gz
