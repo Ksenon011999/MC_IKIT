@@ -1,22 +1,139 @@
-# Байт-код, оптимизированные / DLL-файлы
+# ===== Операционные системы =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ===== Редакторы и IDE =====
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (PyCharm, IntelliJ, WebStorm и т.д.)
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Vim
+*.swp
+*.swo
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ===== Python =====
 __pycache__/
 *.py[cod]
-
-# Файлы конфигурации для venv
-
-# Файлы дистрибутивов и артефакты упаковки
-dist/
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-
-# Файлы покрытия, кэши и прочие ненужные файлы
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.tox/
 .coverage
-*.py,cover
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# ===== Node.js =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store/
+
+# ===== Java =====
+*.class
+*.jar
+*.war
+*.ear
+target/
+.gradle/
+
+# ===== Go =====
+*.exe
+*.test
+*.out
+vendor/
+
+# ===== Rust =====
+target/
+
+# ===== PHP =====
+vendor/
+
+# ===== Ruby =====
+*.gem
+.bundle/
+vendor/bundle/
+
+# ===== Переменные окружения и секреты =====
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+secrets.yml
+secrets.json
+
+# ===== Логи =====
+logs/
+*.log
+
+# ===== Сборка и кэш =====
 .cache/
+tmp/
+temp/
+*.tmp
 
-# Файлы *.py,cover не несут никакого смысла
-*.py,cover
-
-# Контрольные точки в Jupyter notebook лучше оставить в стороне
-.ipynb_checkpoints
-
-.idea/
+# ===== Прочее =====
+*.bak
+*.backup
+*.orig
+*.pid
+*.seed
+*.tgz
+*.zip
+*.tar.gz
