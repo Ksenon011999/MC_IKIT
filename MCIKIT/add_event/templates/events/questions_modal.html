@@ -1,0 +1,282 @@
+{% load form_filters %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для поиска пользователей
+    function searchUsers(query, fieldId) {
+        if (!query) {
+            document.getElementById(`search_results_${fieldId}`).innerHTML = '';
+            return;
+        }
+
+        fetch(`{% url 'add_events:search_users' %}?q=${encodeURIComponent(query)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(response => {
+                console.log('Search response:', response);
+                const users = response.users || [];
+                const resultsDiv = document.getElementById(`search_results_${fieldId}`);
+                resultsDiv.innerHTML = '';
+                
+                if (users.length === 0) {
+                    resultsDiv.innerHTML = '<div class="p-2">Пользователи не найдены</div>';
+                    return;
+                }
+
+                users.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'search-result-item p-2';
+                    userDiv.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="user-name">${user.Name_User}</div>
+                                <div class="user-details">
+                                    <small>${user.username} | Группа: ${user.Number_of_group}</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary">Добавить</button>
+                        </div>
+                    `;
+                    userDiv.querySelector('button').onclick = () => addTeamMember(user, fieldId);
+                    resultsDiv.appendChild(userDiv);
+                });
+                
+                resultsDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultsDiv = document.getElementById(`search_results_${fieldId}`);
+                resultsDiv.innerHTML = '<div class="p-2 text-danger">Ошибка поиска</div>';
+            });
+    }
+
+    // Функция для добавления пользователя в команду
+    window.addTeamMember = function(user, fieldId) {
+        const select = document.getElementById(fieldId);
+        const selectedList = document.getElementById(`selected_members_${fieldId}`);
+
+        // Проверяем, не добавлен ли уже этот пользователь
+        if (!Array.from(select.options).some(opt => opt.value === user.id.toString())) {
+            // Добавляем в select
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.text = user.Name_User;
+            option.selected = true;
+            select.appendChild(option);
+
+            // Добавляем в список
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.dataset.userId = user.id;
+            listItem.innerHTML = `
+                <div class="user-info">
+                    <div class="user-name">${user.Name_User}</div>
+                    <div class="user-details">
+                        <small>${user.username} | Группа: ${user.Number_of_group}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-danger">Удалить</button>
+            `;
+            listItem.querySelector('button').onclick = () => removeTeamMember(listItem, fieldId);
+            selectedList.appendChild(listItem);
+        }
+
+        // Очищаем поиск
+        document.getElementById(`search_results_${fieldId}`).style.display = 'none';
+        document.getElementById(`user_search_${fieldId}`).value = '';
+    };
+
+    // Функция для удаления пользователя из команды
+    window.removeTeamMember = function(listItem, fieldId) {
+        const userId = listItem.dataset.userId;
+        const select = document.getElementById(fieldId);
+        const option = select.querySelector(`option[value="${userId}"]`);
+        if (option) {
+            option.remove();
+        }
+        listItem.remove();
+    };
+
+    // Добавляем обработчики событий для поиска
+    document.querySelectorAll('.search-users').forEach(input => {
+        const fieldId = input.dataset.fieldId;
+        let timeout = null;
+
+        input.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => searchUsers(this.value, fieldId), 300);
+        });
+
+        // Скрываем результаты при клике вне поля поиска
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !document.getElementById(`search_results_${fieldId}`).contains(e.target)) {
+                document.getElementById(`search_results_${fieldId}`).style.display = 'none';
+            }
+        });
+    });
+
+    // Функция отправки формы
+    window.submitForm = function(event) {
+        event.preventDefault();
+        console.log('Form submission started');
+        
+        const form = document.getElementById('questionsForm');
+        const formData = new FormData(form);
+        
+        // Отладочный вывод данных формы
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else if (data.error) {
+                alert(data.error);
+            } else if (data.errors) {
+                const errorMessages = Object.values(data.errors).flat();
+                alert(errorMessages.join('\n'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при отправке формы');
+        });
+        
+        return false;
+    };
+});
+</script>
+
+<style>
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-result-item {
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.selected-users-list {
+    margin-top: 10px;
+}
+
+.form-check {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #243B44;
+    border-radius: 8px;
+}
+
+.form-check-input {
+    margin-right: 10px;
+}
+
+.form-check-label {
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.form-check:hover {
+    background-color: #2a4550;
+}
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="questionsModal" tabindex="-1" aria-labelledby="questionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="questionsModalLabel">Регистрация на мероприятие</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="questionsForm" action="{% url 'add_events:event_register' event.pk %}" method="post" onsubmit="return submitForm(event);">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {% for info in extra_infos %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ info.question }}</label>
+                            {% if info.field_type == 'text' %}
+                                <input type="text" name="extra_{{ info.id }}" class="form-control" required>
+                            {% elif info.field_type == 'choice' %}
+                                <div class="choices-container">
+                                    {% if info.allow_multiple %}
+                                        {% for choice in info.choices_list.all %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="extra_{{ info.id }}" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                                                <label class="form-check-label" for="choice_{{ choice.id }}">
+                                                    {{ choice.value }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for choice in info.choices_list.all %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="extra_{{ info.id }}" value="{{ choice.id }}" id="choice_{{ choice.id }}" required>
+                                                <label class="form-check-label" for="choice_{{ choice.id }}">
+                                                    {{ choice.value }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% elif info.field_type == 'team' %}
+                                <div class="team-section">
+                                    <div class="mb-3">
+                                        <label class="form-label">Название команды</label>
+                                        <input type="text" name="team_name_{{ info.id }}" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Поиск участников</label>
+                                        <input type="text" id="user_search_{{ info.id }}" class="form-control search-users" data-field-id="team_members_{{ info.id }}" placeholder="Введите имя участника">
+                                        <div id="search_results_{{ info.id }}" class="search-results"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Выбранные участники</label>
+                                        <ul id="selected_members_{{ info.id }}" class="list-group selected-users-list"></ul>
+                                        <select id="team_members_{{ info.id }}" name="team_members_{{ info.id }}" multiple style="display: none;"></select>
+                                        <small class="form-text text-muted">
+                                            Минимум {{ info.min_team_size|add:"-1" }}, максимум {{ info.max_team_size|add:"-1" }} участников (вы будете капитаном)
+                                        </small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

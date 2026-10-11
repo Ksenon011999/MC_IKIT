@@ -1,0 +1,595 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Культурно-массовый отдел</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a292f;
+            --text-light: #ffffff;
+            --accent-cyan: #00c6d4;
+            --card-bg: #182226;
+            --highlight-day: #00c6d4;
+            --event-red: #ff6b6b;
+            --event-blue: #4d79ff;
+            --event-green: #28a745;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            padding: 20px 0;
+        }
+
+        .logo {
+            height: 80px;
+        }
+
+        .social-icon {
+            vertical-align: middle;
+            width: 24px;
+            height: 24px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .social-icons .dropdown {
+            margin-left: 15px;
+        }
+
+        .department-title {
+            text-align: right;
+        }
+
+        .department-title h3 {
+            color: #02DAEE;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .department-title p {
+            font-size: 18px;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Events Section */
+        .event-carousel {
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .events-container {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .event-card {
+            background-color: #1a2631;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 100%;
+            margin: 0 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .event-info {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .event-title {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffffff;
+        }
+
+        .btn-review {
+            background-color: transparent;
+            border: 1px solid #889199;
+            color: #ffffff;
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-review:hover {
+            background-color: #283845;
+        }
+
+        /* Carousel Controls */
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .carousel-control.prev {
+            left: 10px;
+        }
+
+        .carousel-control.next {
+            right: 10px;
+        }
+
+        /* Calendar Styles */
+        .calendar-header {
+            color: var(--text-light);
+        }
+
+        .calendar-nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .weekdays-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calendar-day.other-month {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .calendar-day.today {
+            background-color: var(--highlight-day);
+            color: var(--dark-bg);
+            font-weight: bold;
+        }
+
+        .calendar-day.has-event {
+            position: relative;
+        }
+
+        .calendar-day.has-event::after {
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: var(--accent-cyan);
+        }
+
+        .calendar-day.selected {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        /* Event Details Panel */
+        .event-details {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-cyan); /* Цвет текста как у иконок времени и даты */
+            margin-bottom: 10px;
+        }
+
+        .event-details-meta {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .event-details-meta i {
+            color: var(--accent-cyan);
+            margin-right: 5px;
+        }
+
+        .event-details-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-cyan);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #00b5c4;
+        }
+
+        .logo {
+            width: 186px;
+            height: auto;
+        }
+
+        .dropdown me-3 a{
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .department-title {
+                text-align: center;
+                margin-top: 15px;
+            }
+            
+            .social-icons {
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            
+            .event-card {
+                flex: 0 0 calc(100% - 20px);
+                margin-bottom: 20px;
+            }
+            
+            .event-details {
+                margin-top: 20px;
+            }
+        }
+
+        /* Общие стили для раскрывающегося меню */
+        .dropdown-menu {
+            background-color: #1a2631; /* Темный фон */
+            color: #ffffff; /* Белый текст */
+        }
+
+        .dropdown-menu .dropdown-item {
+            color: #ffffff; /* Белый текст для всех пунктов */
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #283845; /* Темный фон при наведении */
+            color: #00c6d4; /* Акцентный цвет текста при наведении */
+        }
+
+        /* Специальный стиль для кнопки "Выйти" */
+        .dropdown-menu .logout-btn:hover {
+            color: #EE2502; /* Красный текст при наведении */
+        }
+
+        /* Стили для неактивного текста */
+        .dropdown-menu .dropdown-item:disabled {
+            color: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый текст */
+            background-color: transparent; /* Прозрачный фон */
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid main-container">
+        <!-- Header Section -->
+        <header class="container header">
+            <div class="row align-items-center py-4">
+                <!-- Profile and Social Icons -->
+                <div class="col-md-4 d-flex justify-content-start align-items-center social-icons">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Профиль
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="font-size: 8px;">
+                            <li><a class="dropdown-item" href="{% url 'users:user_profile' %}">Мой профиль</a></li>
+                            {% if user.is_super_user %}
+                                <li><a class="dropdown-item" href="{% url 'users:user_list' %}">Управление пользователями</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item logout-btn" href="{% url 'start_page' %}">Выйти</a></li>
+                        </ul>
+                    </div>
+                    <a href="https://vk.com/mc_ikit" target="_blank" class="me-3">
+                        <img src="{% static 'start_page/image/vk.png' %}" alt="VK" class="social-icon">
+                    </a>
+                    <a href="https://t.me/IKIT_SibFU" target="_blank" class="me-3">
+                        <i class="bi bi-telegram" style="font-size: 24px; color: white;"></i>
+                    </a>
+                </div>
+
+                <!-- Logo -->
+                <div class="col-md-4 text-center">
+                    <img src="{% static 'start_page/image/logo.png' %}" alt="Лого" class="logo">
+                </div>
+
+                <!-- Department Title -->
+                <div class="col-md-4 text-end department-title">
+                    <h3>КУЛЬТУРНО-МАССОВЫЙ ОТДЕЛ</h3>
+                    <p>Молодежного центра<br>ИКИТ СФУ</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Events Section -->
+            <section class="events-section text-center my-5">
+                <h2 class="section-title mb-4">МЕРОПРИЯТИЯ</h2>
+                <div class="event-carousel position-relative">
+                    <div class="row events-container" id="eventsContainer">
+                        {% for event in carousel_events %}
+                        <div class="event-card">
+                            {% if event.photo %}
+                                <img src="{{ event.photo }}" alt="{{ event.title }}" class="event-image">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200" alt="Placeholder" class="event-image">
+                            {% endif %}
+                            <div class="event-info">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div>
+                                        <i class="bi bi-calendar"></i> <span>{{event.date}}</span>
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-clock"></i> <span>{{event.time}}</span>
+                                    </div>
+                                </div>
+                                <h5 class="event-title">{{ event.title }}</h5>
+                                <a href="{% url 'add_events:event_detail_view' event.id %}" class="btn btn-review">Подробнее</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control prev" id="prevBtn"><i class="bi bi-chevron-left"></i></button>
+                    <button class="carousel-control next" id="nextBtn"><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Calendar Section -->
+            <section class="calendar-section my-5">
+                <h2 class="section-title text-center mb-4">КАЛЕНДАРЬ СОБЫТИЙ</h2>
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="calendar-header d-flex align-items-center justify-content-between mb-3">
+                            <button class="calendar-nav-btn" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
+                            <h3 id="currentMonth"></h3>
+                            <button class="calendar-nav-btn" id="nextMonth"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-container">
+                            <div class="weekdays-row">
+                                <div>Пн</div>
+                                <div>Вт</div>
+                                <div>Ср</div>
+                                <div>Чт</div>
+                                <div>Пт</div>
+                                <div>Сб</div>
+                                <div>Вс</div>
+                            </div>
+                            <div class="days-grid" id="calendarDays">
+                                <!-- Calendar days will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="event-details" id="selectedEventDetails">
+                            <h4>Выберите дату для просмотра мероприятий</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script>
+        let currentDate = new Date();
+        const eventsData = '{{ events_json|escapejs }}';
+        const events = eventsData ? JSON.parse(eventsData) : {};
+
+        function getEventUrl(eventId) {
+            return "{% url 'add_events:event_detail_view' 999999 %}".replace('999999', eventId);
+        }
+
+        function showEventDetails(date) {
+            const eventsList = events[date];
+            const eventDetails = document.getElementById('selectedEventDetails');
+
+            if (eventsList && eventsList.length > 0) {
+                let html = '';
+                eventsList.forEach(event => {
+                    const eventUrl = getEventUrl(event.id);
+                    html += `
+                        <div class="event-details-content">
+                            <h5 class="event-title">${event.title}</h5>
+                            <div class="event-details-meta">
+                                <i class="bi bi-calendar"></i> <span>${event.date}</span><br>
+                                <i class="bi bi-clock"></i> <span>${event.time}</span>
+                            </div>
+                            <p class="event-details-description">${event.description}</p>
+                            <a href="${eventUrl}" class="btn btn-primary mt-3">Подробнее</a>
+                        </div>
+                    `;
+                });
+                eventDetails.innerHTML = html;
+            } else {
+                eventDetails.innerHTML = '<h4>На эту дату нет мероприятий</h4>';
+            }
+        }
+
+        function updateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById('currentMonth').textContent = new Date(year, month).toLocaleString('ru', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            let startDay = new Date(firstDay);
+            startDay.setDate(startDay.getDate() - ((firstDay.getDay() + 6) % 7));
+            
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+
+            for (let i = 0; i < 42; i++) {
+                const currentDay = new Date(startDay);
+                currentDay.setDate(startDay.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = currentDay.getDate();
+                
+                if (currentDay.getMonth() !== month) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                const dateStr = currentDay.toLocaleDateString('sv').split(' ')[0];
+                if (events[dateStr]) {
+                    dayElement.classList.add('has-event');
+                    dayElement.setAttribute('data-date', dateStr);
+                    dayElement.onclick = () => {
+                        document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
+                        dayElement.classList.add('selected');
+                        showEventDetails(dateStr);
+                    };
+                }
+                
+                const today = new Date();
+                if (currentDay.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        document.getElementById('prevMonth').onclick = () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        };
+
+        document.getElementById('nextMonth').onclick = () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        };
+
+        updateCalendar();
+
+        // Initialize carousel
+        $(document).ready(function(){
+            $('#eventsContainer').slick({
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                prevArrow: $('#prevBtn'),
+                nextArrow: $('#nextBtn'),
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 576,
+                        settings: {
+                            slidesToShow: 1
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
