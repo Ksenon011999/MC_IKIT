@@ -21,9 +21,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from .health import health
+
 
 
 urlpatterns = [
+    path('health', health, name='health'),
+    path('health/', health),
     path('admin/', admin.site.urls),
     path('main/', include('main.urls')),
     path('users/', include('users.urls', namespace="users")),
