@@ -63,3 +63,19 @@
 
 \- \[x] Этап 4. Отчёт
 
+
+## Запуск и проверка
+
+```bash
+cd MCIKIT
+python manage.py migrate
+python manage.py runserver
+```
+
+### Проверка сервера
+
+GET `/health` возвращает `200` и `{"status":"ok"}`:
+
+```bash
+curl http://localhost:8000/health
+```
