@@ -63,3 +63,7 @@
 
 \- \[x] Этап 4. Отчёт
 
+## Модель данных
+
+Основные сущности: `User`, `Event`, `EventOrganizer`, `EventRating`, `ExtraInfo`, `Choice`, `UserAnswer`.
+Полное описание: [docs/data-model.md](docs/data-model.md). Код: `MCIKIT/users/models.py`, `MCIKIT/add_event/models.py`.
