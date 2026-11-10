@@ -1,9 +1,16 @@
 # Changelog
 
+Все значимые изменения проекта фиксируются в этом файле.
+
+Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/).
+Версионирование соответствует принципам [Semantic Versioning](https://semver.org/lang/ru/).
+
 ## [0.1.0] - 2026-11-01
 
 ### Added
-- CI workflow (#1)
-- Base application config (#10)
-- Colleague config port (#13)
-- Resolved merge conflict (#14)
+- Добавлен CI workflow (#1).
+- Добавлена базовая конфигурация приложения (#10).
+- Добавлена конфигурация коллеги (#13).
+
+### Fixed
+- Устранён конфликт слияния (#14).
