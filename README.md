@@ -27,22 +27,9 @@
 
 [Перейти к Issues проекта](https://github.com/Ksenon011999/MC_IKIT/issues/2).
 
-## 5. Структура репозитория
+## 5. Запуск и проверка
 
-```text
-MC_IKIT/
-├── .github/
-│   └── workflows/       # Файлы автоматизации CI
-├── MCIKIT/              # Основная часть приложения
-├── config/              # Конфигурационные файлы
-├── docs/                # Документация проекта
-│   ├── bpmn/            # Диаграммы As-Is и To-Be
-│   ├── requirements/   # Функциональные и нефункциональные требования
-│   ├── architecture/   # Архитектурная документация
-│   ├── data/            # Модель данных и ER-диаграмма
-│   ├── adr/             # Журнал архитектурных решений
-│   └── team_roles.md    # Роли и зоны ответственности
-├── requirements         # Список зависимостей Python
-├── CHANGELOG.md         # История изменений проекта
-├── README.md            # Основная информация о проекте
-└── .gitignore           # Исключения для Git
+```bash
+cd MCIKIT
+python manage.py migrate
+python manage.py runserver
