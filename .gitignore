@@ -137,3 +137,8 @@ temp/
 *.tgz
 *.zip
 *.tar.gz
+
+# Module 4 local files
+.ruff_cache/
+local.sqlite3
+local.sqlite3-*

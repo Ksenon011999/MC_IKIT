@@ -5,12 +5,66 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      DJANGO_DEBUG: "1"
+      DJANGO_DB_PATH: ${{ runner.temp }}/mc-ikit-ci.sqlite3
     steps:
       - uses: actions/checkout@v4
-      - name: Run checks
-        run: echo "CI is working"
-
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements
+            requirements-dev.txt
+      - name: Install dependencies
+        id: dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Check Python formatting
+        run: python -m ruff format --check MCIKIT
+      - name: Lint and static analysis
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: python -m ruff check --output-format=github MCIKIT
+      - name: Django checks and migrations
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        working-directory: MCIKIT
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+      - name: Validate deployment settings
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        working-directory: MCIKIT
+        env:
+          DJANGO_DEBUG: "0"
+          DJANGO_ALLOWED_HOSTS: ci.example.invalid
+        run: |
+          export DJANGO_SECRET_KEY="$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')"
+          python manage.py check --deploy
+      - name: Run tests with coverage
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        id: tests
+        working-directory: MCIKIT
+        run: python -m coverage run --rcfile=../pyproject.toml manage.py test
+      - name: Generate coverage reports
+        if: ${{ !cancelled() && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure') }}
+        working-directory: MCIKIT
+        run: |
+          python -m coverage report --rcfile=../pyproject.toml
+          python -m coverage html --rcfile=../pyproject.toml
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: module4-coverage
+          path: MCIKIT/htmlcov/
+          if-no-files-found: ignore
