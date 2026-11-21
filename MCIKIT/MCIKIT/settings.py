@@ -9,28 +9,36 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-import os.path
+import os
 from pathlib import Path
+from secrets import token_urlsafe
 
-from django.conf.global_settings import EMAIL_HOST, EMAIL_HOST_PASSWORD, MEDIA_ROOT, MEDIA_URL
-
-#from django.conf.global_settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
+from django.core.exceptions import ImproperlyConfigured
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+DEBUG = os.environ.get("DJANGO_DEBUG") == "1"
+if DEBUG:
+    SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or token_urlsafe(48)
+else:
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+    if not SECRET_KEY.strip():
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set.")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xix+c6imfalg)z5hc)wsm-o9t%eilf!o$3jz5%+#5@%gu(8@x9'
+default_hosts = "localhost,127.0.0.1" if DEBUG else ""
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", default_hosts).split(",")
+    if host.strip()
+]
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 0 if DEBUG else 3600
 
 
 # Application definition
@@ -63,7 +71,7 @@ ROOT_URLCONF = 'MCIKIT.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,7 +93,7 @@ WSGI_APPLICATION = 'MCIKIT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.environ.get("DJANGO_DB_PATH") or BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -124,14 +132,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL='main'
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'main'
 
 LOGOUT_REDIRECT_URL='start_page'
 
@@ -147,14 +156,19 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
-EMAIL_HOST = "smtp.yandex.ru"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "mcikit@yandex.ru"
-EMAIL_HOST_PASSWORD = "gukotherorikgtyf"
+EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_HOST_PASSWORD", "")
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+elif DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+EMAIL_HOST = os.environ.get("DJANGO_EMAIL_HOST", "smtp.yandex.ru")
+EMAIL_PORT = int(os.environ.get("DJANGO_EMAIL_PORT", "465"))
 EMAIL_USE_SSL = True
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = (
+    os.environ.get("DJANGO_DEFAULT_FROM_EMAIL") or EMAIL_HOST_USER or "webmaster@localhost"
+)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_ADMIN = SERVER_EMAIL

@@ -1,0 +1,14 @@
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["MCIKIT/staticfiles", "MCIKIT/media"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.coverage.run]
+branch = true
+source = ["users", "add_event", "MCIKIT"]
+omit = ["*/migrations/*", "*/test_*.py", "*/tests.py", "*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
