@@ -74,3 +74,4 @@ HTML-отчёт появится в `MCIKIT/htmlcov/index.html`. CI прикла
 - [Настройка рабочего места](docs/module4/environment_setup.md)
 - [Развертывание и переменные окружения](docs/module4/deployment.md)
 - [Аутентификация и восстановление пароля](docs/module4/authentication.md)
+- [Предварительный отчёт по практической №4 (PDF)](docs/module4/MC_IKIT_Practice4_Draft.pdf)
